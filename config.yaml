@@ -1,0 +1,58 @@
+# rimagent configuration
+llm:
+  base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+  model: gemini-3.1-flash-lite
+  api_key: not-needed          # ← ใส่คีย์จริงใน config.local.yaml (gitignored) แทน
+  max_streams: 1
+  thinking: false
+  max_tokens: 800
+  timeout_s: 600
+
+bridge:
+  url: http://127.0.0.1:8765
+
+play:
+  speed: 2                 # play speed between steps: 1 normal, 2 fast, 3 superfast
+  think_speed: 1           # ✅ แก้: calm step → play 1x while thinking (เดิม 0 = pause เสียเวลาจริง)
+  danger_think_speed: 0    # ✅ แก้: urgent step → pause ให้ LLM คิดทัน (เดิม 1 = play ระหว่างอันตราย)
+  first_improve_day: 99     # first mid-episode improvement pass this many days into a game
+  improve_every_days: 99    # and then every N days
+  wake_hours: 3            # scheduled think interval (in-game hours) when the model doesn't say
+  min_wake_hours: 2        # floor for the model's own wake_in_hours (danger events/alerts bypass this)
+  event_cooldown_hours: 3  # non-critical wake events are ignored this long after a step
+  alert_wake_priorities: [Critical]
+  alert_rewake_hours: 24
+  critical_kinds: [dialog, danger, manhunter, hostile_group, colonist_downed, colonist_died, mental_break, building_lost]
+  max_tool_calls: 4        # ✅ แก้: 5 → 8 (5 ต่ำเกินไป งานไม่จบ step เปลืองกว่าเดิม)
+  llm_attempts: 1          # ✅ เพิ่ม: retry 1 ครั้ง (ไม่ retry ทันทีเมื่อ 429)
+  max_days: 60
+  autosave: true
+  seeds: [rimagent-1, rimagent-2, rimagent-3, rimagent-4, rimagent-5]
+  parallel: false
+  parallel_max_calls: 10
+  parallel_manager: false
+  parallel_worker_thinking: false
+  scenario: Crashlanded
+  storyteller: Cassandra
+  difficulty: Rough
+  wake_on_kinds: [dialog, danger, manhunter, letter, incident, colonist_died, colonist_downed, mental_break, hostile_group, quest, building_lost, steward, orders]
+
+steward:
+  enabled: true
+  scorer: true
+  stock: true
+  research_queue_default: []
+  orders:
+    enabled: true
+    "off": []
+    # superseded_watchers: {hostile_draft: combat, undraft_after_fight: combat, fire_alert: fire, rescue_downed: rescue,
+    #                       unforbid_drops_watcher: unforbid, rotting_corpses: corpses, food_policy_watcher: policies, build_stall: blueprints}
+
+watchdog:
+  enabled: false
+  every_hours: 168
+  min_errors: 50
+  max_tool_calls: 10
+
+dashboard:
+  port: 8770
